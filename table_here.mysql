@@ -1,0 +1,129 @@
+CREATE database project;
+USE project;
+-- drop database project;-- 
+
+CREATE TABLE CINEMA (
+CIN_ID INT AUTO_INCREMENT NOT NULL,
+CIN_NAME VARCHAR(100) NOT NULL,
+PRIMARY KEY (CIN_ID)
+);
+
+CREATE TABLE USER_ACCOUNT (
+USER_ID INT auto_increment NOT NULL,
+PASSWORD_HASH VARCHAR(255) NOT NULL,
+USER_NAME VARCHAR(100) NOT NULL,
+IS_ADMIN BOOLEAN DEFAULT False,
+PRIMARY KEY (USER_ID)
+);
+
+
+CREATE TABLE CUSTOMER (
+CUS_ID INT AUTO_INCREMENT NOT NULL,
+CUS_DATE DATE NOT NULL,
+CUS_TCKT_QTY INT NOT NULL,
+CUS_TYPE ENUM('MEMBER', 'REGULAR') NOT NULL Default	'REGULAR',
+PRIMARY KEY (CUS_ID)
+);
+
+CREATE TABLE MOVIE (
+MOV_ID INT AUTO_INCREMENT NOT NULL,
+MOV_TITLE VARCHAR(100) NOT NULL,
+MOV_RUNTIME TIME NOT NULL,
+MOV_TICKET_PRICE DECIMAL(6,2) NOT NULL,
+MOV_SCRN_TIME DATETIME NOT NULL,
+MOV_FORMAT ENUM("2D", "IMAX 3D", "IMAX 2D", "Director\'s Club", "IMAX", "4DX/Premiere", "ATMOS", "A-Luxe", "Premiere", "VIP", "Platinum Cinema", "Dolby Atmos", "Premier", "Arthouse Premiere", "Special Screening", "Independent", "Arthouse") NOT NULL,
+MOV_RATING  ENUM('G', 'PG', 'PG-13', 'R-13', 'R-16', 'R-18') NOT NULL,
+PRIMARY KEY (MOV_ID)
+);
+
+CREATE TABLE SCREENING(
+CIN_ID INT NOT NULL,
+MOV_ID INT NOT NULL,
+-- screening ref is a composite key 
+SCREENING_REF INT AUTO_INCREMENT NOT NULL,
+SCREENING_STR_DATE DATE NOT NULL,
+SCREENING_END_DATE DATE NOT NULL,
+PRIMARY KEY (SCREENING_REF),
+FOREIGN KEY (CIN_ID) REFERENCES CINEMA(CIN_ID),
+FOREIGN KEY (MOV_ID) REFERENCES MOVIE(MOV_ID)
+);
+
+SELECT * FROM SEAT;
+
+CREATE TABLE SEAT(
+SEAT_ID INT AUTO_INCREMENT NOT NULL,
+SEAT_TYPE ENUM('Recliner', 'Regular'),
+CIN_ID INT NOT NULL,
+PRIMARY KEY(SEAT_ID),
+FOREIGN KEY(CIN_ID) REFERENCES CINEMA(CIN_ID)
+);
+
+CREATE TABLE TRANSACTION(
+TRAN_ID INT AUTO_INCREMENT NOT NULL,
+TRAN_TYPE ENUM('Regular', 'Reserve', 'Refund', 'Cancellation') NOT NULL,
+TRAN_STATUS ENUM('Pending', 'Paid', 'Cancelled') NOT NULL,
+CUS_ID INT NOT NULL,
+CIN_ID INT NOT NULL,
+PRIMARY KEY(TRAN_ID),
+FOREIGN KEY(CUS_ID) REFERENCES CUSTOMER(CUS_ID),
+FOREIGN KEY(CIN_ID) REFERENCES CINEMA(CIN_ID)
+);
+
+
+CREATE TABLE TICKET(
+TCKT_ID INT AUTO_INCREMENT NOT NULL,
+TCKT_PRICE DECIMAL(6,2) NOT NULL,
+TCKT_SEAT_NUMBER INT NOT NULL,
+TCKT_FORMAT ENUM("2D", "IMAX 3D", "IMAX 2D", "Director\'s Club", "IMAX", "4DX/Premiere", "ATMOS", "A-Luxe", "Premiere", "VIP", "Platinum Cinema", "Dolby Atmos", "Premier", "Arthouse Premiere", "Special Screening", "Independent", "Arthouse") NOT NULL,
+MOV_ID INT NOT NULL,
+SEAT_ID INT NOT NULL,
+CUS_ID INT NOT NULL,
+TRAN_ID INT NOT NULL,
+PRIMARY KEY(TCKT_ID),
+FOREIGN KEY (MOV_ID) REFERENCES MOVIE(MOV_ID),
+FOREIGN KEY (SEAT_ID) REFERENCES SEAT(SEAT_ID),
+FOREIGN KEY (CUS_ID) REFERENCES CUSTOMER(CUS_ID),
+FOREIGN KEY (TRAN_ID) REFERENCES TRANSACTION(TRAN_ID)
+);
+
+-- type here if you want to insert sql code
+INSERT INTO project.CINEMA(CIN_NAME) VALUES
+("SM City Manila"),
+("SM Mall of Asia Cinemas (IMAX)"),
+("SM Aura Director\'s Club"),
+("SM Megamall Director\'s Club"),
+("SM City North EDSA (IMAX)"),
+("SM City Sta. Mesa"),
+("Bonifacio High Street Cinemas"),
+("Greenbelt 3 Cinemas"),
+("Power Plant Cinema (Rockwell)"),
+("Ayala Malls Manila Bay"),
+("TriNoma Cinemas"),
+("U.P. Town Center"),
+("Robinsons Movieworld"),
+("Robinsons Movieworld Manila"),
+("Robinsons Galleria Ortigas"),
+("Robinsons Place Malate"),
+("Robinsons Magnolia"),
+("Megaworld Cinemas"),
+("Newport Cinema, Resorts World Manila"),
+("Uptown Cinema"),
+("Venice Cineplex (Venice Grand Canal Mall)"),
+("Eastwood Cinema"),
+("Lucky Chinatown Mall"),
+("Ortigas Cinemas"),
+("Red Carpet at Shangri-La Plaza (Shang Cineplex)"),
+("Promenade (Greenhills)"),
+("Greenhills Cinemas"),
+("Estancia Cinemas"),
+("Gateway Cineplex 18 (with Platinum Cinema and Dolby Atmos)"),
+("Century City Mall Premier Cinema"),
+("Cinematheque Centre Manila"),
+("Cinema Centenario");
+
+SELECT * FROM MOVIE;
+SELECT * FROM SCREENING;
+
+-- SET SQL_SAFE_UPDATES = 0;
+-- DELETE FROM CINEMA WHERE CIN_NAME = "Other Notable Cinemas";
+-- SET SQL_SAFE_UPDATES = 1;
